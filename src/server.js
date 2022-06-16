@@ -1,8 +1,8 @@
 const express = require("express");
-const req = require("express/lib/request");
-const res = require("express/lib/response");
 
 const app = express();
+
+app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
@@ -26,6 +26,27 @@ app.get("/users/:userId", (req, res) => {
   } else {
     res.json({ message: `User Not Found, userId ${userId}` });
   }
+});
+
+app.post("/users", (req, res) => {
+  const user = req.body;
+
+  users.push(user);
+
+  res.json(users);
+});
+
+app.put("/users/:userId", (req, res) => {
+  const newUser = req.body;
+  const userId = req.params.userId;
+
+  if (users[userId]) {
+    users[userId] = newUser;
+  } else {
+    return res.json({ message: `user not found, userId ${userId}` });
+  }
+
+  res.json(users);
 });
 
 app.listen(PORT, () => {
