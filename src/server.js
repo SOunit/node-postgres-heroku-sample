@@ -1,4 +1,5 @@
 const express = require("express");
+const Company = require("./company.model");
 const client = require("./databasepg");
 
 const app = express();
@@ -7,65 +8,59 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
-const users = [
-  { name: "Jack" },
-  { name: "Bec" },
-  { name: "Kate" },
-  { name: "Kevin" },
-  { name: "Randal" },
-];
+app.get("/companies", async (req, res) => {
+  const companyModel = new Company();
 
-app.get("/users", (req, res) => {
-  res.json(users);
+  const companies = await companyModel.getCompanies();
+  console.log(companies);
+
+  res.json(companies);
 });
 
-app.get("/users/:userId", (req, res) => {
-  const userId = req.params.userId;
+app.get("/companies/:companyId", async (req, res) => {
+  const companyId = req.params.companyId;
 
-  if (users[userId]) {
-    res.json(users[userId]);
+  const companyModel = new Company();
+
+  const company = await companyModel.getCompanyById(companyId);
+
+  if (company) {
+    res.json(company);
   } else {
-    res.json({ message: `User Not Found, userId ${userId}` });
+    res.json({ message: `company Not Found, companyId ${companyId}` });
   }
 });
 
-app.post("/users", (req, res) => {
-  const user = req.body;
+app.post("/companies", (req, res) => {
+  const company = req.body;
 
-  users.push(user);
+  companies.push(company);
 
-  res.json(users);
+  res.json(companies);
 });
 
-app.put("/users/:userId", (req, res) => {
-  const newUser = req.body;
-  const userId = req.params.userId;
+app.put("/companies/:companyId", async (req, res) => {
+  const newCompany = req.body;
+  const companyId = req.params.companyId;
 
-  if (users[userId]) {
-    users[userId] = newUser;
+  console.log("newCompany", newCompany);
+  console.log("companyId", companyId);
+
+  const companyModel = new Company();
+  const response = await companyModel.updateCompany(companyId, newCompany);
+
+  console.log("response", response);
+
+  if (response) {
+    return res.json(response);
   } else {
-    return res.json({ message: `user not found, userId ${userId}` });
+    return res.json({ message: `company not found, companyId ${companyId}` });
   }
-
-  res.json(users);
 });
 
 client
   .connect()
   .then(() => {
-    client.query(
-      "SELECT table_schema,table_name FROM information_schema.tables;",
-      (err, res) => {
-        if (err) throw err;
-
-        for (let row of res.rows) {
-          console.log(JSON.stringify(row));
-        }
-
-        client.end();
-      }
-    );
-
     app.listen(PORT, () => {
       console.log(`listen on ${PORT}`);
     });
