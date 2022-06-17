@@ -1,4 +1,5 @@
 const express = require("express");
+const client = require("./databasepg");
 
 const app = express();
 
@@ -49,6 +50,24 @@ app.put("/users/:userId", (req, res) => {
   res.json(users);
 });
 
-app.listen(PORT, () => {
-  console.log(`listen on ${PORT}`);
-});
+client
+  .connect()
+  .then(() => {
+    client.query(
+      "SELECT table_schema,table_name FROM information_schema.tables;",
+      (err, res) => {
+        if (err) throw err;
+
+        for (let row of res.rows) {
+          console.log(JSON.stringify(row));
+        }
+
+        client.end();
+      }
+    );
+
+    app.listen(PORT, () => {
+      console.log(`listen on ${PORT}`);
+    });
+  })
+  .catch((err) => console.log(err));

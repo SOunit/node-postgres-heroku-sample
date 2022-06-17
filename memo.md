@@ -11,3 +11,12 @@
 ```
 npm i pg
 ```
+
+# connect heroku postgres from pgAdmin
+
+- go to `resource / setting / Database Credentials` page in heroku
+- get connection info
+  - Host
+  - database
+  - user
+  - etc.
