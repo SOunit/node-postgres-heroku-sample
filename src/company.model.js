@@ -1,6 +1,34 @@
 const client = require("./databasepg");
 
 class Company {
+  async createCompany(newCompany) {
+    try {
+      const { name, age, address, salary, join_date } = newCompany;
+
+      const query = `INSERT INTO
+                          COMPANY (ID, NAME, AGE, ADDRESS, SALARY, JOIN_DATE)
+                      VALUES
+                          ($1, $2, $3, $4, $5, $6);`;
+      const companyId = Math.floor(Math.random(1000) * 1000);
+      const values = [companyId, name, age, address, salary, join_date];
+
+      const response = await client.query(query, values);
+
+      console.log("createCompany response", response);
+
+      return {
+        id: companyId,
+        name,
+        age,
+        address,
+        salary,
+        join_date,
+      };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async getCompanyById(companyId) {
     // https://node-postgres.com/features/queries
     try {

@@ -31,12 +31,14 @@ app.get("/companies/:companyId", async (req, res) => {
   }
 });
 
-app.post("/companies", (req, res) => {
+app.post("/companies", async (req, res) => {
   const company = req.body;
 
-  companies.push(company);
+  const companyModel = new Company();
 
-  res.json(companies);
+  const response = await companyModel.createCompany(company);
+
+  res.json(response);
 });
 
 app.put("/companies/:companyId", async (req, res) => {
